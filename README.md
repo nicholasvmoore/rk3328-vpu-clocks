@@ -41,7 +41,7 @@ Full story: [blog.md](blog.md). Persistence options:
 **Option A — rebuild the DTB only** (recommended):
 
 ```sh
-git am 0001-arm64-dts-rockchip-rk3328-pin-VPU-decode-and-RGA-clock-rates.patch
+git am 0001-arm64-dts-rockchip-pin-RK3328-rkvdec-RGA-clocks-at-the-mpp-advanced-rate.patch
 make ARCH=arm64 dtbs            # rk3328 dtb rebuilds in seconds
 # deploy rk3328-<board>.dtb the way your image does, reboot
 ```

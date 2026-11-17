@@ -6,7 +6,7 @@ survive reboots, three independent ways — pick one (or stack them).
 
 | Layer | Mechanism | Needs kernel rebuild? | Covers |
 |---|---|---|---|
-| 1 (recommended) | DTS patch [`0001-*.patch`](0001-arm64-dts-rockchip-rk3328-pin-VPU-decode-and-RGA-clock-rates.patch) | DTB only | boot-time, self-maintaining, upstreamable |
+| 1 (recommended) | DTS patch [`0001-*.patch`](0001-arm64-dts-rockchip-pin-RK3328-rkvdec-RGA-clocks-at-the-mpp-advanced-rate.patch) | DTB only | boot-time, self-maintaining, upstreamable |
 | 2 | boot pin: [`vpu-clocks.initd`](scripts/vpu-clocks.initd) / [`.service`](scripts/vpu-clocks.service) | no | boot-time |
 | 3 | watchdog: [`vpu-clock-watchdog.sh`](scripts/vpu-clock-watchdog.sh) + units | no | runtime, re-asserts on drift |
 
