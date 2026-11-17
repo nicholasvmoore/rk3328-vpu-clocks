@@ -1,0 +1,20 @@
+[Unit]
+Description=Pin RK3328 VPU decoder/RGA clocks to 400 MHz (rkmpp BSP workaround)
+Documentation=https://github.com/nicholasvmoore/rk3328-vpu-clocks
+After=multi-user.target
+
+[Service]
+Type=oneshot
+# CRU CLKSEL_CON(n) = 0xFF440000 + 0x100 + 4n; hiword [31:16] of each write
+# is the per-bit write-enable mask. Field: bits[4:0] divider (rate =
+# parent/(div+1)), bits[7:6] mux (0 = CPLL @ 1200 MHz). 0x0202 per halfword
+# = div 2 + mux CPLL = 400 MHz. See README + blog.md for the full story.
+# CON(51) (venc) is deliberately not pinned: the venc driver self-manages.
+ExecStart=/usr/local/bin/cru 0x1c0 0xFFFF0202
+ExecStart=/usr/local/bin/cru 0x1c4 0x00FF0202
+ExecStart=/usr/local/bin/cru 0x190 0xFFFF0202
+ExecStart=/bin/sh -c 'echo 1000 > /proc/mpp_service/load_interval'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+# /etc/init.d/vpu-clock-watchdog — background repin loop for RK3328 VPU
+# decoder/RGA clocks (companion to vpu-clocks.initd; both need
+# /usr/local/bin/cru from scripts/cru.c compiled on the board).
+#
+# Optional: only needed as belt-and-braces for the venc driver's
+# session-start clock re-application or future mpp driver changes. The
+# boot-time pin (vpu-clocks.initd) or the DTS patch alone already cover
+# the measured fix.
+
+description="Watchdog repinning RK3328 VPU decoder/RGA clocks to 400 MHz"
+
+command="/usr/local/bin/vpu-clock-watchdog.sh"
+command_background="yes"
+pidfile="/run/vpu-clock-watchdog.pid"
+output_log="/var/log/vpu-clock-watchdog.log"
+error_log="/var/log/vpu-clock-watchdog.log"
+
+depend() {
+	after vpu-clocks
+}
+
+start_pre() {
+	[ -x "$command" ] || return 1
+}

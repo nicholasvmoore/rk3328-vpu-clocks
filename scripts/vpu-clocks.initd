@@ -1,0 +1,46 @@
+#!/sbin/openrc-run
+# /etc/init.d/vpu-clocks — boot-time pin for RK3328 VPU decoder/RGA clocks.
+#
+# Why: the BSP mpp auto-frequency path never fires for rkvdec on RK3328
+# (/proc/mpp_service/rkvdec/* real_rate_hz stays 0), so the clocks stay at
+# the rk3328.dtsi boot pins: 100 MHz decoder / 50 MHz venc — 33.8 fps 4K
+# HEVC decode instead of 70.2 fps at 400 MHz. Use this when you cannot
+# rebuild the kernel/DTS (the DTS fix in patches/0001-*.patch is the
+# preferred, reboot-free-at-boot fix).
+#
+# Requires: gcc-compiled scripts/cru.c installed as /usr/local/bin/cru.
+#
+# CRU register math: CLKSEL_CON(n) = 0xFF440000 + 0x100 + 4n. Hiword
+# [31:16] of the written word is the per-bit write-enable mask (required,
+# or the write is ignored). Each field: bits[4:0] divider (rate =
+# parent/(div+1)), bits[7:6] mux (0 = CPLL @ 1200 MHz live). 0x0202 per
+# halfword = div 2 + mux CPLL = 400 MHz.
+#
+# CON(51) (venc) is deliberately NOT pinned: the venc driver self-manages
+# (resume -> 300 MHz, idle -> 50 MHz reduce) via working CCF writes, and
+# 400 MHz showed no encode gain (27.15 vs 27.32 fps — noise).
+
+description="Pin RK3328 VPU decode/RGA clocks to 400 MHz (rkmpp BSP workaround)"
+
+depend() {
+	after local
+}
+
+start() {
+	ebegin "Pinning RK3328 VPU/decoder/RGA clocks to 400 MHz"
+	# CON(48) 0x1C0: aclk_rkvdec_pre (div[4:0], mux[7:6]) +
+	#                sclk_vdec_cabac (div[12:8], mux[15:14])
+	/usr/local/bin/cru 0x1c0 0xFFFF0202
+	# CON(49) 0x1C4: sclk_vdec_core (div[4:0], mux[7:6])
+	/usr/local/bin/cru 0x1c4 0x00FF0202
+	# CON(36) 0x190: clk_rga (div[4:0], mux[7:6]) +
+	#                aclk_rga_pre (div[12:8], mux[15:14]) — mux must be
+	#                forced to CPLL or clk_rga stays on its GPLL default
+	#                (491.52/3 = 163.84 MHz; RGA is clock-bound)
+	/usr/local/bin/cru 0x190 0xFFFF0202
+	# mpp_service load-accounting interval: /proc/mpp_service/load reads
+	# garbage at the default interval; 1000 gives sane load/util numbers
+	# for /proc/mpp_service/load and the telemetry sampler
+	echo 1000 > /proc/mpp_service/load_interval
+	eend $?
+}

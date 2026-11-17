@@ -1,0 +1,13 @@
+[Unit]
+Description=Watchdog repinning RK3328 VPU decoder/RGA clocks to 400 MHz
+Documentation=https://github.com/nicholasvmoore/rk3328-vpu-clocks
+After=vpu-clocks.service
+Requires=vpu-clocks.service
+
+[Service]
+ExecStart=/usr/local/bin/vpu-clock-watchdog.sh 5
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
