@@ -129,8 +129,8 @@ serial handoff across decode → RGA → encode costs the last ~12 ms/frame.
   should show 400 MHz, and decode should roughly double.
 
 The patch, the register tool, the watchdog, and the full root-cause
-write-up are at <https://github.com/nicholasvmoore/rk3328-vpu-clocks>.
-If anyone knows why `rkvdec2_set_freq()`
+write-up are at <https://git.bun-arcturus.ts.net/git/rk3328-vpu-clocks>
+(mirrored on GitHub). If anyone knows why `rkvdec2_set_freq()`
 never fires on RK3328, I'd genuinely like to hear it — the DTS pin
 works, but the driver should be doing this itself.
 

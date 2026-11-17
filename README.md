@@ -1,5 +1,10 @@
 # rk3328-vpu-clocks
 
+> **Canonical:** `https://git.bun-arcturus.ts.net/git/rk3328-vpu-clocks.git`
+> — self-hosted githost, anonymously readable via Tailscale Funnel. This
+> GitHub repository is a read-only mirror kept in sync from the canonical
+> repo.
+
 One-patch fix for the crippled VPU/decoder clocks on RK3328 boards
 (Rock Pi E and friends) running the Rockchip BSP (`rkr`) kernel with the
 `mpp` media stack.
